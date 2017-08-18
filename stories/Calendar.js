@@ -65,14 +65,65 @@ storiesOf('module.Calendar.week', module)
       </div>
     )
   })
-  .add('event layout', () => {
+ .add('resource', () => {
     return (
-      <div style={{height: 600}}>
+      <div style={{height: 500}}>
+        <DragableCalendar />
+      </div>
+    )
+  })
+  .add('day view 0', () => {
+    return (
+      <div style={{height: 800}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(0)}
+        />
+      </div>
+    )
+  })
+  .add('day view 1', () => {
+    return (
+      <div style={{height: 800}}>
         <Calendar
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           timeslots={4}
           events={createEvents(1)}
+        />
+      </div>
+    )
+  })
+  .add('day view 2', () => {
+    return (
+      <div style={{height: 800}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(2)}
+        />
+      </div>
+    )
+  })
+  .add('day view 3', () => {
+    return (
+      <div style={{height: 800}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(3)}
+        />
+      </div>
+    )
+  })
+  .add('day view 4', () => {
+    return (
+      <div style={{height: 800}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(4)}
         />
       </div>
     )
