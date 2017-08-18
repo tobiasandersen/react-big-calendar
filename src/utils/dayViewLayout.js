@@ -156,6 +156,51 @@ let handleMultiDayEvents = (title, start, end, current) => {
 }
 
 /**
+ * Calculates the total number of columns needed for a group of events
+ * (i.e. connected events).
+ */
+let getNbrOfColumns = ({
+  firstEventIdx,
+  siblingIndexes,
+  childGroups,
+  nbrOfChildColumns,
+  helperArgs
+}) => {
+  // If the first event doesn't have any siblings, the number of columns will be
+  // decided by that event's children's column count.
+  if (siblingIndexes.length === 0) {
+    return nbrOfChildColumns + 1 // make room for the event itself
+  }
+
+  // There are top level siblings, and possibly child groups inside those.
+  // In the normal case, the number of columns needed will be the largest of:
+  // 1. The number of top level events
+  // 2. The number of columns in any of the top level event's child groups
+  const nbrOfColumns = Math.max(nbrOfChildColumns, siblingIndexes.length) + 1
+
+  // But since we aim to move child groups as far to the right as possible,
+  // we must take into account those that are moved to the very last
+  // top level event. If we don't, there will be no room for them to render.
+  let newParentIdx = firstEventIdx
+  let siblingIdx = 0
+  childGroups.forEach(group => {
+    while (isChild(siblingIndexes[siblingIdx], group[0], helperArgs)) {
+      newParentIdx = siblingIndexes[siblingIdx]
+      siblingIdx++
+    }
+  })
+
+  // The child groups can't be moved to the last top level event.
+  if (newParentIdx !== siblingIndexes.length + 1) {
+    return nbrOfColumns
+  }
+
+  // The child groups can be moved to the last top level event, so we'll
+  // have to add add an extra column for those to render in.
+  return nbrOfColumns + 1
+}
+
+/**
  * Returns height and top offset, both in percentage, for an event at
  * the specified index.
  */
@@ -228,7 +273,13 @@ export default function getStyledEvents ({
     let { childGroups, nbrOfChildColumns } = getChildGroups(
       idx, idx + siblings.length + 1, helperArgs
     )
-    let nbrOfColumns = Math.max(nbrOfChildColumns, siblings.length) + 1;
+    let nbrOfColumns = getNbrOfColumns({
+      firstEventIdx: idx,
+      siblingIndexes: siblings,
+      childGroups,
+      nbrOfChildColumns,
+      helperArgs
+    });
 
     // Set styles to top level events.
     [idx, ...siblings].forEach((eventIdx, siblingIdx) => {
@@ -251,7 +302,7 @@ export default function getStyledEvents ({
       let parentIdx = idx
       let siblingIdx = 0
 
-      // Move child group to sibling if possible, since this will makes
+      // Move child group to sibling if possible, since this will make
       // room for more events.
       while (isChild(siblings[siblingIdx], group[0], helperArgs)) {
         parentIdx = siblings[siblingIdx]
