@@ -165,9 +165,13 @@ export default function createEvents(idx = 0, date = new Date()) {
         'title': 'Event 6',
         'start': new Date(y, m, d, 10, 0, 0, 0),
         'end': new Date(y, m, d, 13, 0, 0, 0)
+      },
+      {
+        'title': 'Event 7',
+        'start': new Date(y, m, d, 10, 0, 0, 0),
+        'end': new Date(y, m, d, 13, 0, 0, 0)
       }
     ]
-
   ]
 
   return sets[idx]
