@@ -117,6 +117,11 @@ export default function createEvents(idx = 0, date = new Date()) {
         'start': new Date(y, m, d, 6, 30, 0, 0),
         'end': new Date(y, m, d, 8, 0, 0, 0)
       },
+      {
+        'title': 'Event 16',
+        'start': new Date(y, m, d, 16, 0, 0, 0),
+        'end': new Date(y, m, d, 17, 30, 0, 0)
+      },
     ],
     [
       {
