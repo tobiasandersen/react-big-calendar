@@ -223,7 +223,6 @@ let getYStyles = (idx, {
   let end = Math.max(getSlot(multiDayEvent || event, endAccessor, min, totalMin), start + step)
   let top = start / totalMin * 100
   let bottom = end / totalMin * 100
-
   let height = bottom - top
 
   return {
@@ -263,13 +262,82 @@ export default function getStyledEvents ({
   events: unsortedEvents, startAccessor, endAccessor, min, totalMin, showMultiDayTimes,
   step, timeslots
 }) {
+  console.log(':::START:::')
+
+  // 0 - 23
+  let matrix = []
+
+
   let OVERLAP_MULTIPLIER = 0.3
+  // OVERLAP_MULTIPLIER = 0
   let events = sort(unsortedEvents, { startAccessor, endAccessor })
   let helperArgs = { events, startAccessor, endAccessor, min, showMultiDayTimes, totalMin, step, timeslots }
   let styledEvents = []
   let idx = 0
+  let eventIdx = 0
 
-  // One iteration will cover all connected events.
+  // Each iteration will create a new row with columns.
+  while (eventIdx < events.length) {
+    const event = events[eventIdx]
+    console.log(`Create row ${matrix.length}, starting with ${event.title} (idx: ${eventIdx})`)
+
+    // Create a new row
+    let row = [ eventIdx, ...getSiblings(eventIdx, helperArgs) ]
+    console.log(`Row ${matrix.length} has ${row.length} columns`)
+
+    // Check if the row can be placed inside another row.
+    let eventStart = getSlot(event, startAccessor, min, totalMin)
+
+    for (let i = matrix.length - 1; i >= 0; --i) {
+      console.log(`Does ${event.title} fit in row ${i}?`)
+      const rowAbove = matrix[i]
+      const itemIdx = rowAbove[0]
+      const item = events[itemIdx]
+      const canFit = itemEnd > eventStart
+
+      // If it can't fit in this row, it won't fit higher up either.
+      if (!canFit) break
+
+      
+      const itemEnd = getSlot(item, startAccessor, min, totalMin)
+      console.log(`${canFit ? 'Yes' : 'No'}`)
+      console.log(rowAbove, { eventStart, itemEnd })
+    }
+
+    matrix.push(row)
+
+    eventIdx += row.length
+  }
+
+  console.log(`Matrix done.`)
+  console.log(matrix)
+  console.log(`Now apply styles...`)
+
+  matrix.forEach((row, rowIdx) => {
+    console.log(`Row ${rowIdx}`)
+    let columns = row.length
+    let columnWidth = 100 / columns
+    let extraOverlapping = columnWidth * (columns > 1 ? OVERLAP_MULTIPLIER : 0)
+
+    row.forEach((eventIdx, columnIdx) => {
+      console.log(`Apply style for ${events[eventIdx].title}`)
+      let { top, height } = getYStyles(eventIdx, helperArgs)
+
+      styledEvents[eventIdx] = {
+        event: events[eventIdx],
+        style: {
+          top,
+          height,
+          width: columnWidth + extraOverlapping,
+          xOffset: (columnWidth * columnIdx) - extraOverlapping
+        }
+      }
+    })
+  })
+
+  return styledEvents
+
+  // Each iteration will create a new row with columns.
   while (idx < events.length) {
     let siblings = getSiblings(idx, helperArgs)
     let { childGroups, nbrOfChildColumns } = getChildGroups(
@@ -337,6 +405,5 @@ export default function getStyledEvents ({
       (total, group) => total + group.length, 0
     )
   }
-
   return styledEvents
 }
