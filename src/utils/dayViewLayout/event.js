@@ -72,7 +72,7 @@ export default class Event {
   }
 
   /**
-   * The event's width without any overlap added.
+   * The event's width without any overlap.
    */
   get _width () {
     if (this.row === null) {
