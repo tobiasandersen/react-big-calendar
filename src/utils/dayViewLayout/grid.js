@@ -1,6 +1,45 @@
 import Island from './island'
 import Row from './row'
 
+const isOverlapping = (a, b) => {
+  const startDiff = Math.abs(b.startSlot - a.startSlot)
+  const endDiff = Math.abs(b.endSlot - a.endSlot)
+
+  if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
+    console.log('a', a)
+    console.log('b', b)
+    console.log({startDiff, endDiff})
+  }
+
+  if (startDiff >= 60 && endDiff <= 60) {
+    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
+      console.log('1 false')
+
+    }
+    return false
+  }
+
+  if (b.startSlot < a.endSlot) {
+    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
+      console.log('2 false')
+    }
+    return true
+  }
+
+
+  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
+    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
+      console.log('3 false')
+    }
+    return true
+  }
+
+  if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
+    console.log('last false')
+  }
+  return false
+}
+
 export default class Grid {
   constructor (events = []) {
     this._events = events
@@ -78,7 +117,10 @@ export default class Grid {
     if (!next) return
 
     // Check if this event can go into another island
-    const island = this.islands.find(island => island.endSlot > next.startSlot)
+    const island = this.islands.find(island => {
+      return isOverlapping(island, next)
+      // island.endSlot > next.startSlot
+    })
 
     // Found an Island the event, so we add it there.
     if (island) {

@@ -22,7 +22,7 @@ const isOverlapping = (row, event) => {
 
 export default class Island {
   constructor (event) {
-    this.title = event.title
+    this.title = event.data.title
     this.event = event
     this.rows = []
     event.setIsland(this)
@@ -51,7 +51,6 @@ export default class Island {
   addEvent = (event) => {
     event.setIsland(this)
 
-    // console.log(`Add ${event.title} to island`)
     if (this.rows.length === 0) {
       this.createRow(event)
       return
