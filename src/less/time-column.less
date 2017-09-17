@@ -31,6 +31,19 @@
 .rbc-day-slot {
   position: relative;
 
+  .rbc-events-container {
+    border-right: 10px solid transparent;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+    &.rtl {
+      border-left: 10px solid transparent;
+      border-right: none;
+    }
+  }
+
   .rbc-event {
     border: 1px solid @event-border;
     display: flex;

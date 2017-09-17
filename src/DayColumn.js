@@ -130,13 +130,14 @@ class DayColumn extends React.Component {
         max={max}
         step={step}
       >
-        {this.renderEvents()}
-
-        {selecting && (
-          <div className="rbc-slot-selection" style={slotStyle}>
-            <span>
-              {localizer.format(selectDates, selectRangeFormat, culture)}
-            </span>
+        <div className={cn('rbc-events-container', { rtl: this.props.rtl })}>
+          {this.renderEvents()}
+        </div>
+        {selecting &&
+          <div className='rbc-slot-selection' style={style}>
+              <span>
+              { localizer.format(selectDates, selectRangeFormat, culture) }
+              </span>
           </div>
         )}
       </TimeColumn>
