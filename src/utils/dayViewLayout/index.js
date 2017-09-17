@@ -1,7 +1,5 @@
-export { startsBefore, positionFromDate } from './model'
-import createFactory from './model'
+import Event from './event'
 import Grid from './grid'
-const OVERLAP_MULTIPLIER = 0.3
 
 const sort = events => {
   const grid = new Grid(events)
@@ -13,8 +11,7 @@ export default function getStyledEvents (props) {
   console.clear()
   console.log(':::START:::')
 
-  const eventFactory = createFactory(props)
-  const events = props.events.map(event => eventFactory(event))
+  const events = props.events.map(event => new Event(event, props))
   const grid = sort(events)
 
   return grid.eventsInRenderOrder.map((event, idx) => {
@@ -30,6 +27,7 @@ export default function getStyledEvents (props) {
         xOffset: event.xOffset
       }
     }
-
   })
 }
+
+export { startsBefore, positionFromDate } from './event'

@@ -1,4 +1,5 @@
 import Row from './row'
+
 const isOverlapping = (row, event) => {
   const startDiff = Math.abs(event.startSlot - row.startSlot)
   const endDiff = Math.abs(event.endSlot - row.endSlot)
