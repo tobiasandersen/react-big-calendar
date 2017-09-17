@@ -3,25 +3,19 @@ const isOverlapping = (row, event) => {
   const startDiff = Math.abs(event.startSlot - row.startSlot)
   const endDiff = Math.abs(event.endSlot - row.endSlot)
 
-  console.log(event.title + ' => ' + row.title)
-  console.log(startDiff)
-
   if (startDiff >= 60 && endDiff >= 60) {
     return false
   }
 
   if (event.startSlot < row.endSlot) {
-    console.log('Yes start < row.end')
     return true
   }
 
 
   if (event.startSlot < row.startSlot && event.endSlot > row.startSlot) {
-    console.log('Yes 2')
     return true
   }
 
-  console.log('No last')
   return false
 }
 

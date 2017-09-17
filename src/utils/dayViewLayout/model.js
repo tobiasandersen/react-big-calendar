@@ -13,7 +13,6 @@ export function positionFromDate(date, min, total) {
   return Math.min(diff, total)
 }
 
-
 export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
   const getSlot = (data, accessor) => {
     if (!data) return false
@@ -43,8 +42,7 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
       return 100 / this.island.nbrOfColumns
     }
 
-    get width () {
-      // Top level event
+    get _width () {
       if (this.row === null) {
         return this.topLevelWidth
       }
@@ -53,12 +51,24 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
       return availableWidth / this.row.columns
     }
 
-    get left () {
+    get width () {
+      // Can't grow if it's already taking up the full row.
+      if (this._width === 100) return 100
+
+      // The last element in a row can't grow.
+      if (this.row && this.rowIndex === this.row.columns - 1) {
+        return this._width
+      }
+
+      return this._width * 1.7
+    }
+
+    get xOffset () {
       if (this.row === null) {
         return 0
       }
 
-      return this.topLevelWidth + (this.rowIndex * this.width)
+      return this.topLevelWidth + (this.rowIndex * this._width)
     }
 
     // TODO: remove
