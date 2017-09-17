@@ -35,7 +35,7 @@ export class Grid {
   createRenderOrder = () => {
     while (this.sortedEvents.length > 0) {
       const [ event ] = this.sortedEvents.splice(0, 1)
-      this.eventsInRenderOrder.push(event)
+      event && this.eventsInRenderOrder.push(event)
 
       for (let i = 0; i < this.sortedEvents.length; i++) {
         const test = this.sortedEvents[i]
@@ -50,7 +50,7 @@ export class Grid {
         // move it here.
         if (i > 0) {
           const [ event ] = this.sortedEvents.splice(i, 1)
-          this.eventsInRenderOrder.push(event)
+          event && this.eventsInRenderOrder.push(event)
         }
 
         // We've already found the next event island, so stop looking.
@@ -83,9 +83,11 @@ export class Grid {
 
     if (!next) return
 
-    // console.log(`Finding island for ${next.title}`)
+    if (next.title === 'Event 10') {
+      console.log
+    }
 
-    // Check if this event can go into another row
+    // Check if this event can go into another island
     const island = this.islands.find(island => {
       return isOverlapping(island, next)
     })
@@ -96,21 +98,6 @@ export class Grid {
     } else {
       // console.log(`Couldn't find an island for ${next.title}. Create new.`)
       this.islands.push(new Island(next))
-    }
-
-    for (let i = 0; i < this.events.length && !next; i++) {
-      const test = this.events[i]
-
-      if (event.end > test.end) {
-        console.log('test.start > event.end')
-        next = this.take(i)
-        continue
-      }
-
-      if (i > 0) {
-        console.log('i > 0')
-        grid.take(i)
-      }
     }
 
     return next
@@ -125,6 +112,7 @@ class Island {
     this.title = event.title
     this.event = event
     this.rows = []
+    event.setIsland(this)
   }
 
   get startSlot () {
@@ -135,6 +123,12 @@ class Island {
     return this.event.endSlot
   }
 
+  get nbrOfColumns () {
+    return this.rows.reduce((max, row) => {
+      return Math.max(max, row.columns + 1)
+    }, 1)
+  }
+
   createRow = (firstEvent) => {
     const row = new Row(this.id, firstEvent)
     this.rows.push(row)
@@ -142,6 +136,8 @@ class Island {
   }
 
   addEvent = (event) => {
+    event.setIsland(this)
+
     // console.log(`Add ${event.title} to island`)
     if (this.rows.length === 0) {
       this.createRow(event)
@@ -151,6 +147,13 @@ class Island {
     // Find a place for it. Start from behind.
     for (let i = this.rows.length - 1; i >= 0; i--) {
       const lastRow = this.rows[i]
+
+      if (event.title === 'Event 10') {
+        console.log(`Finding row for ${event.title}`)
+        console.log([...this.rows])
+        console.log(lastRow)
+      }
+
       // console.log({lastRow})
 
       if (isOverlapping(lastRow, event)) {
@@ -171,13 +174,12 @@ export class Row {
     this.id = rowId++
     this.island = island
     this.title = firstEvent.title
-    this.rows = []
-    this.items = [firstEvent]
-    firstEvent.setRow(this.id, 0)
+    this.events = [firstEvent]
+    firstEvent.setRow(this, 0)
   }
 
   get firstEvent () {
-    return this.items[0]
+    return this.events[0]
   }
 
   get startSlot () {
@@ -188,9 +190,13 @@ export class Row {
     return this.firstEvent.endSlot
   }
 
+  get columns () {
+    return this.events.length
+  }
+
   addEvent = (event) => {
     // console.log(`Adding ${event.title} to ${this.title}`)
-    event.setRow(this.id, this.items.length)
-    this.items.push(event)
+    event.setRow(this , this.events.length)
+    this.events.push(event)
   }
 }

@@ -6,60 +6,7 @@ const OVERLAP_MULTIPLIER = 0.3
 const sort = events => {
   const grid = new Grid(events)
   grid.createRenderOrder()
-  // grid.createIslands()
-
-  // let next = undefined
-  // let startOvers = 0
-  //
-  // The Grid shouldn't have any events when done.
-  // while (grid.events.length > 0 && next !== null) {
-  //   // const row = new Row(event)
-  //   next = grid.findNextRow(next)
-  //   if (next === undefined) {
-  //     startOvers++
-  //     console.log('Reached end')
-  //   } else {
-  //     console.log('nextRow:', next && next.title)
-  //   }
-  //
-  //   if (!startOvers) {
-  //     grid.rows.push(new Row(next))
-  //     continue
-  //   }
-  //
-  //   // Is nested
-  //
-  //
-  //
-  //   // const _rows = {}
-  //
-  //   // Look for events whose start time is less than this event's end time.
-  //   // for (let i = 0; i < grid.events.length; i++) {
-  //   //   const test = grid.events[i]
-  //   //
-  //   //   // Still inside this event, so look for next
-  //   //   if (event.end > test.start) {
-  //   //     // const timeSlotDistance = test.startSlot - event.startSlot
-  //   //     // const timeslot = Math.floor(timeSlotDistance / 60) // TODO: Not sure if 60 minutes always is ok?
-  //   //     // const timeslotRow = _rows[timeslot] || []
-  //   //     // _rows[timeslot] = [...timeslotRow, test]
-  //   //     continue
-  //   //   }
-  //   //
-  //   //   // We've found the first event of the next event island.
-  //   //   // If that event is not right next to our current event, we have to
-  //   //   // move it here.
-  //   //   if (i > 0) {
-  //   //     grid.take(i)
-  //   //   }
-  //   //
-  //   //   // We've already found the next event island, so stop looking.
-  //   //   break
-  //   // }
-  //
-  //   // rows[grid.currentEventIndex] = _rows
-  // }
-
+  grid.createIslands()
   return grid
 }
 
@@ -72,9 +19,14 @@ export default function getStyledEvents (props) {
   const grid = sort(events)
 
   return grid.eventsInRenderOrder.map((event, idx) => {
-    // console.log('=> -----------------------------')
-    console.log(event.title)
-    // const rowsInEvent = rows[idx] || {}
+    console.log('=> -----------------------------')
+    console.log(`Render ${event.title}`)
+    const { row, rowIndex, island } = event
+    console.log(`Island: ${island.title}`)
+    console.log(`Row: ${row}`)
+    console.log(`Row Index: ${rowIndex}`)
+    console.log(`width: ${event.width}`)
+
 
     let nbrOfColumns = 1
     // Object.keys(rowsInEvent).map(key => {
@@ -92,8 +44,8 @@ export default function getStyledEvents (props) {
       style: {
         top: event.top,
         height: event.height,
-        width,
-        xOffset: left
+        width: event.width,
+        xOffset: event.left
       }
     }
 
