@@ -28,11 +28,40 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
       this.data = data
       this.row = null
       this.rowIndex = 0
+      this.island = null
+      this.islandIndex = null
+    }
+
+    setIsland = (island, index) => {
+      this.island = island
+      this.islandIndex = index
     }
 
     setRow = (id, index) => {
       this.row = id
       this.rowIndex = index
+    }
+
+    get topLevelWidth () {
+      return 100 / this.island.nbrOfColumns
+    }
+
+    get width () {
+      // Top level event
+      if (this.row === null) {
+        return this.topLevelWidth
+      }
+
+      const availableWidth = 100 - this.topLevelWidth
+      return availableWidth / this.row.columns
+    }
+
+    get left () {
+      if (this.row === null) {
+        return 0
+      }
+
+      return this.topLevelWidth + (this.rowIndex * this.width)
     }
 
     // TODO: remove
