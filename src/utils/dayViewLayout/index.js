@@ -1,12 +1,11 @@
 export { startsBefore, positionFromDate } from './model'
 import createFactory from './model'
-import { Grid, Row } from './row'
+import Grid from './grid'
 const OVERLAP_MULTIPLIER = 0.3
 
 const sort = events => {
   const grid = new Grid(events)
   grid.createRenderOrder()
-  grid.createIslands()
   return grid
 }
 
@@ -19,13 +18,13 @@ export default function getStyledEvents (props) {
   const grid = sort(events)
 
   return grid.eventsInRenderOrder.map((event, idx) => {
-    console.log('=> -----------------------------')
-    console.log(`Render ${event.title}`)
+    // console.log('=> -----------------------------')
+    // console.log(`Render ${event.title}`)
     const { row, rowIndex, island } = event
-    console.log(`Island: ${island.title}`)
-    console.log(`Row: ${row}`)
-    console.log(`Row Index: ${rowIndex}`)
-    console.log(`width: ${event.width}`)
+    // console.log(`Island: ${island.title}`)
+    // console.log(`Row: ${row}`)
+    // console.log(`Row Index: ${rowIndex}`)
+    // console.log(`width: ${event.width}`)
 
 
     let nbrOfColumns = 1

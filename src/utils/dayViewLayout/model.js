@@ -15,8 +15,6 @@ export function positionFromDate(date, min, total) {
 
 
 export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
-  let id = 0
-
   const getSlot = (data, accessor) => {
     if (!data) return false
     return positionFromDate(get(data, accessor), min, totalMin)
@@ -24,7 +22,6 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
 
   class Event {
     constructor (data) {
-      this.id = id++
       this.data = data
       this.row = null
       this.rowIndex = 0
@@ -37,8 +34,8 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
       this.islandIndex = index
     }
 
-    setRow = (id, index) => {
-      this.row = id
+    setRow = (row, index) => {
+      this.row = row
       this.rowIndex = index
     }
 
