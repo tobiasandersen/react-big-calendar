@@ -74,8 +74,16 @@ export class Grid {
 
     for (let i = 0; i < this.events.length && !next; i++) {
       const test = this.events[i]
-      if (test.start > event.end) {
+
+      if (event.end > test.end) {
+        console.log('test.start > event.end')
         next = this.take(i)
+        continue
+      }
+
+      if (i > 0) {
+        console.log('i > 0')
+        grid.take(i)
       }
     }
 
@@ -108,21 +116,24 @@ class Island {
   }
 
   addEvent = (event) => {
-    console.log(`Add ${event.title} to island ${this.title}`)
+    // console.log(`Add ${event.title} to island`)
     if (this.rows.length === 0) {
       this.createRow(event)
+      return
     }
 
     // Find a place for it. Start from behind.
     for (let i = this.rows.length - 1; i >= 0; i--) {
       const lastRow = this.rows[i]
-      console.log({lastRow})
+      // console.log({lastRow})
 
       if (isOverlapping(lastRow, event)) {
-        console.log(`Found overlapping event for ${event.title}`)
-        // console.log(i, {lastEvent})
+        lastRow.addEvent(event)
+        return
       }
     }
+
+    this.createRow(event)
   }
 }
 
@@ -130,7 +141,7 @@ let rowId = 0
 
 export class Row {
   constructor (island, firstEvent) {
-    console.log(`Create new row ${firstEvent.title}`)
+    // console.log(`Create new row ${firstEvent.title}`)
     this.id = rowId++
     this.island = island
     this.title = firstEvent.title
@@ -152,6 +163,7 @@ export class Row {
   }
 
   addEvent = (event) => {
+    // console.log(`Adding ${event.title} to ${this.title}`)
     event.setRow(this.id, this.items.length)
     this.items.push(event)
   }
