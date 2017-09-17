@@ -10,7 +10,6 @@ const isOverlapping = (a, b) => {
 
 export class Grid {
   constructor (events = []) {
-    // This is the end product.
     this._events = events
     this.eventsInRenderOrder = []
     this.rows = []
@@ -34,19 +33,46 @@ export class Grid {
   }
 
   createRenderOrder = () => {
+    while (this.sortedEvents.length > 0) {
+      const [ event ] = this.sortedEvents.splice(0, 1)
+      this.eventsInRenderOrder.push(event)
+
+      for (let i = 0; i < this.sortedEvents.length; i++) {
+        const test = this.sortedEvents[i]
+
+        // Still inside this event, so look for next
+        if (event.end > test.start) {
+          continue
+        }
+
+        // We've found the first event of the next event island.
+        // If that event is not right next to our current event, we have to
+        // move it here.
+        if (i > 0) {
+          const [ event ] = this.sortedEvents.splice(i, 1)
+          this.eventsInRenderOrder.push(event)
+        }
+
+        // We've already found the next event island, so stop looking.
+        break
+      }
+    }
+  }
+
+  take = index => {
+    const [ event ] = this.events.splice(index, 1)
+    // this.eventsInRenderOrder.push(event)
+    return event
+  }
+
+  createIslands = () => {
     let next = undefined
-    let currentLevel = 0
 
     while (this.events.length > 0 && next !== null) {
       next = this.findNextIsland(next)
     }
   }
 
-  take = index => {
-    const [ event ] = this.events.splice(index, 1)
-    this.eventsInRenderOrder.push(event)
-    return event
-  }
 
   findNextIsland = (event) => {
     let next

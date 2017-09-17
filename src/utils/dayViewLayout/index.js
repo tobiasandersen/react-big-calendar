@@ -6,6 +6,7 @@ const OVERLAP_MULTIPLIER = 0.3
 const sort = events => {
   const grid = new Grid(events)
   grid.createRenderOrder()
+  // grid.createIslands()
 
   // let next = undefined
   // let startOvers = 0
