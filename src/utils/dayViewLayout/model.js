@@ -26,7 +26,13 @@ export default ({ startAccessor, endAccessor, min, totalMin }) => event => {
     constructor (data) {
       this.id = id++
       this.data = data
-      this.parent = null
+      this.row = null
+      this.rowIndex = 0
+    }
+
+    setRow = (id, index) => {
+      this.row = id
+      this.rowIndex = index
     }
 
     // TODO: remove
