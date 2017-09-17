@@ -59,7 +59,7 @@ const sort = events => {
   //   // rows[grid.currentEventIndex] = _rows
   // }
 
-  return { sortedEvents: grid.eventsInRenderOrder, rows: grid.rows }
+  return grid
 }
 
 export default function getStyledEvents (props) {
@@ -68,21 +68,12 @@ export default function getStyledEvents (props) {
 
   const eventFactory = createFactory(props)
   const events = props.events.map(event => eventFactory(event))
-  const { sortedEvents, rows } = sort(events)
+  const grid = sort(events)
 
-  sortedEvents.forEach(event => {
-    // if (event.title === 'Event 1') {
-    //   console.log(event.startSlot)
-    //   console.log(event.endSlot)
-    //   console.log('slots', event.endSlot - event.startSlot)
-    // }
-  })
-  console.log(rows)
-
-  return sortedEvents.map((event, idx) => {
+  return grid.eventsInRenderOrder.map((event, idx) => {
     // console.log('=> -----------------------------')
     console.log(event.title)
-    const rowsInEvent = rows[idx] || {}
+    // const rowsInEvent = rows[idx] || {}
 
     let nbrOfColumns = 1
     // Object.keys(rowsInEvent).map(key => {
