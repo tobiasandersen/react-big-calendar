@@ -18,25 +18,8 @@ export default function getStyledEvents (props) {
   const grid = sort(events)
 
   return grid.eventsInRenderOrder.map((event, idx) => {
-    // console.log('=> -----------------------------')
-    // console.log(`Render ${event.title}`)
     const { row, rowIndex, island } = event
-    // console.log(`Island: ${island.title}`)
-    // console.log(`Row: ${row}`)
-    // console.log(`Row Index: ${rowIndex}`)
-    // console.log(`width: ${event.width}`)
-
-
-    let nbrOfColumns = 1
-    // Object.keys(rowsInEvent).map(key => {
-    //   const column = rowsInEvent[key]
-    //   nbrOfColumns = Math.max(nbrOfColumns, column.length + 1)
-    //   // console.log(column.length, column.map(event => event))
-    // })
-    // console.log(`Number of columns: ${nbrOfColumns}`)
-
-    const width = 100 / nbrOfColumns
-    const left = width * 0
+    const withOverlap = event.width === 100 ? 100 : event.width * 1.7
 
     return {
       event: event.data,
@@ -44,7 +27,7 @@ export default function getStyledEvents (props) {
         top: event.top,
         height: event.height,
         width: event.width,
-        xOffset: event.left
+        xOffset: event.xOffset
       }
     }
 
