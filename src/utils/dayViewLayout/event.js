@@ -6,8 +6,9 @@ export function startsBefore(date, min) {
 }
 
 export function positionFromDate(date, min, total) {
-  if (startsBefore(date, min))
-  return 0
+  if (startsBefore(date, min)) {
+    return 0
+  }
 
   const diff = dates.diff(min, dates.merge(min, date), 'minutes')
   return Math.min(diff, total)
@@ -19,16 +20,15 @@ export default class Event {
     this.props = props
     this.row = null
     this.rowIndex = 0
-    this.island = null
-  }
-
-  setIsland = (island) => {
-    this.island = island
   }
 
   setRow = (row, index) => {
     this.row = row
     this.rowIndex = index
+  }
+
+  get group () {
+    return this.row && this.row.group
   }
 
   get startDate () {
@@ -68,7 +68,8 @@ export default class Event {
   }
 
   get topLevelWidth () {
-    return 100 / this.island.nbrOfColumns
+    console.log(this.group, this.data.title)
+    return 100 / (this.group ? this.group.nbrOfColumns : 1)
   }
 
   /**
@@ -99,7 +100,9 @@ export default class Event {
 
   get xOffset () {
     // The top level event shouldn't have any offset.
-    if (this.row === null) return 0
+    if (this.row === null) {
+      return 0
+    }
 
     return this.topLevelWidth + (this.rowIndex * this._width)
   }

@@ -1,7 +1,6 @@
 export default class Row {
-  constructor (island, firstEvent) {
-    this.island = island
-    this.title = firstEvent.title
+  constructor (group, firstEvent) {
+    this.group = group
     this.events = [firstEvent]
     firstEvent.setRow(this, 0)
   }
@@ -23,8 +22,7 @@ export default class Row {
   }
 
   addEvent = (event) => {
-    // console.log(`Adding ${event.title} to ${this.title}`)
-    event.setRow(this , this.events.length)
+    event.setRow(this, this.events.length)
     this.events.push(event)
   }
 }

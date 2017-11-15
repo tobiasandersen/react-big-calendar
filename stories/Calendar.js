@@ -89,7 +89,24 @@ storiesOf('module.Calendar.week', module)
       </div>
     )
   })
+<<<<<<< 37b9454979b6dfb28545e43abb31dbd375549f30
   .add('event layout', () => {
+=======
+
+  .add('day view 0', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(0)}
+        />
+      </div>
+    )
+  })
+
+  .add('day view 1', () => {
+>>>>>>> remove grid
     return (
       <div style={{height: 600}}>
         <Calendar
@@ -101,6 +118,7 @@ storiesOf('module.Calendar.week', module)
       </div>
     )
   })
+<<<<<<< 37b9454979b6dfb28545e43abb31dbd375549f30
  .add('resource', () => {
     return (
       <div style={{height: 500}}>
@@ -108,6 +126,33 @@ storiesOf('module.Calendar.week', module)
       </div>
     )
   })
+=======
+
+  .add('day view 2', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(2)}
+        />
+      </div>
+    )
+  })
+
+  .add('day view 3', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(3)}
+        />
+      </div>
+    )
+  })
+
+>>>>>>> remove grid
   .add('selectable', () => {
     return (
       <div style={{height: 600}}>
