@@ -67,13 +67,49 @@ storiesOf('module.Calendar.week', module)
     )
   })
 
-  .add('day view', () => {
+  .add('day view 0', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(0)}
+        />
+      </div>
+    )
+  })
+
+  .add('day view 1', () => {
     return (
       <div style={{height: 600}}>
         <Calendar
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           events={createEvents(1)}
+        />
+      </div>
+    )
+  })
+
+  .add('day view 2', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(2)}
+        />
+      </div>
+    )
+  })
+
+  .add('day view 3', () => {
+    return (
+      <div style={{height: 600}}>
+        <Calendar
+          defaultView={Calendar.Views.DAY}
+          defaultDate={new Date()}
+          events={createEvents(3)}
         />
       </div>
     )

@@ -20,12 +20,10 @@ const isOverlapping = (row, event) => {
   return false
 }
 
-export default class Island {
+export default class Group {
   constructor (event) {
-    this.title = event.data.title
     this.event = event
     this.rows = []
-    event.setIsland(this)
   }
 
   get startSlot () {
@@ -37,9 +35,7 @@ export default class Island {
   }
 
   get nbrOfColumns () {
-    return this.rows.reduce((max, row) => {
-      return Math.max(max, row.columns + 1)
-    }, 1)
+    return this.rows.reduce((max, row) => Math.max(max, row.columns + 1), 1)
   }
 
   createRow = (firstEvent) => {
@@ -49,8 +45,7 @@ export default class Island {
   }
 
   addEvent = (event) => {
-    event.setIsland(this)
-
+    // No rows in this group, create one for the event.
     if (this.rows.length === 0) {
       this.createRow(event)
       return
@@ -66,6 +61,7 @@ export default class Island {
       }
     }
 
+    // Couldn't find a row for the event, create new.
     this.createRow(event)
   }
 }
