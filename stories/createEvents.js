@@ -187,12 +187,7 @@ export default function createEvents(idx = 0, date = new Date()) {
         title: 'test 2',
         start: new Date(y, m, d, 21, 45, 0, 0),
         end: new Date(y, m, d, 21, 45, 0, 0)
-      },
-      {
-        title: 'test 3',
-        start: new Date(y, m, d, 21, 45, 0, 0),
-        end: new Date(y, m, d, 21, 45, 0, 0)
-      },
+      }
     ]
   ]
 

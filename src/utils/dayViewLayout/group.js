@@ -12,7 +12,6 @@ const isOverlapping = (row, event) => {
     return true
   }
 
-
   if (event.startSlot < row.startSlot && event.endSlot > row.startSlot) {
     return true
   }
@@ -47,7 +46,7 @@ export default class Group {
 
   addEvent = (event) => {
     event.setGroup(this)
-    
+
     // No rows in this group, create one for the event.
     if (this.rows.length === 0) {
       this.createRow(event)

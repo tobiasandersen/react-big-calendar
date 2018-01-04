@@ -65,11 +65,12 @@ export default class Event {
   }
 
   get height () {
-    return this.bottom - this.top
+    // Maybe set min-width instead?
+    return Math.max(2, this.bottom - this.top)
   }
 
   get topLevelWidth () {
-    return 100 / (this.group ? this.group.nbrOfColumns : 1)
+    return 100 / this.group.nbrOfColumns
   }
 
   /**

@@ -1,55 +1,45 @@
 import Event from './event'
 import Group from './group'
 
-const isOverlapping = (a, b) => {
+const isInGroup = (a, b) => {
   const startDiff = Math.abs(b.startSlot - a.startSlot)
   const endDiff = Math.abs(b.endSlot - a.endSlot)
 
-  if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
-    console.log('a', a)
-    console.log('b', b)
-    console.log({startDiff, endDiff})
+  // The events start and end at the same time.
+  if (startDiff === 0 && endDiff === 0) {
+    return true
   }
 
-  if (startDiff >= 60 && endDiff <= 60) {
-    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
-      console.log('1 false')
+  // b starts inside a.
+  if (b.startSlot < a.endSlot) {
+    return true
+  }
 
-    }
+  // TODO: understand and comment
+  if (startDiff >= 60 && endDiff <= 60) {
     return false
   }
 
-  if (b.startSlot < a.endSlot) {
-    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
-      console.log('2 false')
-    }
-    return true
-  }
-
-
+  // TODO: understand and comment
   if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
-    if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
-      console.log('3 false')
-    }
     return true
   }
 
-  if (a && b && a.title === 'Event 1' && b.data.title === 'Event 11') {
-    console.log('last false')
-  }
   return false
 }
 
-const sortByTime = events => events.sort((a, b) => {
-  if (a.start === b.start) {
-    return b.end - a.end
-  }
-
-  return a.start - b.start
-})
-
 const sortByRender = events => {
-  const sortedByTime = sortByTime([ ...events ])
+  // Sort events according to:
+  // 1. start time
+  // 2. duration
+  const sortedByTime = events.sort((a, b) => {
+    if (a.start === b.start) {
+      return b.end - a.end
+    }
+
+    return a.start - b.start
+  })
+
   const sorted = []
 
   while (sortedByTime.length > 0) {
@@ -72,48 +62,12 @@ const sortByRender = events => {
         event && sorted.push(event)
       }
 
-      // We've already found the next event island, so stop looking.
+      // We've already found the next event group, so stop looking.
       break
     }
   }
 
   return sorted
-}
-
-const groupEvents = events => {
-  // We want to maintain the order of the events, so since we'll be altering
-  // the array, we clone it first.
-  const tmp = [ ...events ]
-  const groups = []
-
-  const findNextGroup = event => {
-    let next
-
-    if (!event) {
-      const [ event ] = tmp.splice(0, 1)
-      next = event
-    }
-
-    if (!next) return
-
-    // Check if this event can go into another group.
-    const group = groups.find(group => isOverlapping(group, next))
-
-    // Found a group for the event, so we add it there.
-    if (group) {
-      group.addEvent(next)
-    } else {
-      // Couldn't find a group, so we create a new.
-      groups.push(new Group(next))
-    }
-
-    return next
-  }
-
-  let next = undefined
-  while (tmp.length > 0 && next !== null) {
-    next = findNextGroup(next)
-  }
 }
 
 function getStyledEvents (props) {
@@ -122,8 +76,24 @@ function getStyledEvents (props) {
   const events = props.events.map(event => new Event(event, props))
   const eventsInRenderOrder = sortByRender(events)
 
-  // Group overlapping events
-  groupEvents(eventsInRenderOrder)
+  // Group overlapping events, but keep the order.
+  const groups = []
+  const tmp = [ ...eventsInRenderOrder ] // clone to maintain order.
+
+  while (tmp.length > 0) {
+    const [ event ] = tmp.splice(0, 1)
+
+    // Check if this event can go into another group.
+    let group = groups.find(group => isInGroup(group, event))
+
+    if (group) {
+      group.addEvent(event)
+      continue
+    }
+
+    // Couldn't find a group, so we create a new.
+    groups.push(new Group(event))
+  }
 
   // Return the original events, along with their styles.
   return eventsInRenderOrder.map(event => ({
