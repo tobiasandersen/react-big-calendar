@@ -1,5 +1,25 @@
 import { accessor as get } from '../accessors'
 import dates from '../dates'
+import Row from './row'
+
+const isOverlapping = (row, event) => {
+  const startDiff = Math.abs(event.startSlot - row.startSlot)
+  const endDiff = Math.abs(event.endSlot - row.endSlot)
+
+  if (startDiff >= 60 && endDiff >= 60) {
+    return false
+  }
+
+  if (event.startSlot < row.endSlot) {
+    return true
+  }
+
+  if (event.startSlot < row.startSlot && event.endSlot > row.startSlot) {
+    return true
+  }
+
+  return false
+}
 
 export function startsBefore(date, min) {
   return dates.lt(dates.merge(min, date), min, 'minutes')
@@ -18,18 +38,62 @@ export default class Event {
   constructor(data, props) {
     this.data = data
     this.props = props
-    this.row = null
-    this.group = null
-    this.rowIndex = 0
+    this._container = null
+    this._rows = []
+    this._row = null
   }
 
-  setGroup = (group) => {
-    this.group = group
+  contains = (event) => {
+    const startDiff = Math.abs(event.startSlot - this.startSlot)
+    const endDiff = Math.abs(event.endSlot - this.endSlot)
+
+    // The events start and end at the same time.
+    if (startDiff === 0 && endDiff === 0) {
+      return true
+    }
+
+    // b starts inside a.
+    if (event.startSlot < this.endSlot) {
+      return true
+    }
+
+    // TODO: understand and comment
+    if (startDiff >= 60 && endDiff <= 60) {
+      return false
+    }
+
+    // TODO: understand and comment
+    if (event.startSlot < this.startSlot && event.endSlot > this.startSlot) {
+      return true
+    }
+
+    return false
+  }
+
+  setContainer = (event) => {
+    this._container = event
   }
 
   setRow = (row, index) => {
-    this.row = row
-    this.rowIndex = index
+    this._row = row
+  }
+
+  addEvent = (event) => {
+    event.setContainer(this)
+
+    // Check if the added event can be placed in an existing row.
+    // Start looking from behind.
+    for (let i = this._rows.length - 1; i >= 0; i--) {
+      const lastRow = this._rows[i]
+
+      if (isOverlapping(lastRow, event)) {
+        lastRow.addEvent(event)
+        return
+      }
+    }
+
+    // Couldn't find a row for the event – that means this event is a row.
+    this._rows.push(new Row(event))
   }
 
   get startDate () {
@@ -69,20 +133,24 @@ export default class Event {
     return Math.max(2, this.bottom - this.top)
   }
 
-  get topLevelWidth () {
-    return 100 / this.group.nbrOfColumns
-  }
-
   /**
    * The event's width without any overlap.
    */
   get _width () {
-    if (this.row === null) {
-      return this.topLevelWidth
+    // The container event's width is determined by the maximum number of
+    // events in any of its rows.
+    if (!this._container) {
+      const nbrOfColumns = this._rows
+        .reduce((max, row) => Math.max(max, row.columns + 1), 1)
+      return 100 / nbrOfColumns
     }
 
-    const availableWidth = 100 - this.topLevelWidth
-    return availableWidth / this.row.columns
+    const availableWidth = 100 - this._container._width
+    return availableWidth / this._row.columns
+  }
+
+  get _rowIndex () {
+    return this._row && this._row.events.indexOf(this)
   }
 
   /**
@@ -91,20 +159,24 @@ export default class Event {
    */
   get width () {
     // Can't grow if it's already taking up the full row.
-    if (this._width === 100) return this._width
+    if (this._width === 100) {
+      return 100
+    }
 
-    // The last element in a row can't grow.
-    if (this.row && this.rowIndex === this.row.columns - 1) return this._width
+    // The last element in a row isn't allowed to grow.
+    if (this._row && this._rowIndex === this._row.columns - 1) {
+      return this._width
+    }
 
     return this._width * 1.7
   }
 
   get xOffset () {
-    // The top level event shouldn't have any offset.
-    if (this.row === null) {
+    // The container event shouldn't have any offset.
+    if (!this._container) {
       return 0
     }
 
-    return this.topLevelWidth + (this.rowIndex * this._width)
+    return this._container._width + (this._rowIndex * this._width)
   }
 }

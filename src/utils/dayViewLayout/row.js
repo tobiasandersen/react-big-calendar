@@ -1,6 +1,5 @@
 export default class Row {
-  constructor (group, firstEvent) {
-    this.group = group
+  constructor (firstEvent) {
     this.events = [firstEvent]
     firstEvent.setRow(this, 0)
   }
@@ -22,7 +21,7 @@ export default class Row {
   }
 
   addEvent = (event) => {
-    event.setRow(this, this.events.length)
+    event.setRow(this)
     this.events.push(event)
   }
 }

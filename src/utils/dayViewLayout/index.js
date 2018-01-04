@@ -1,32 +1,5 @@
 import Event from './event'
-import Group from './group'
-
-const isInGroup = (a, b) => {
-  const startDiff = Math.abs(b.startSlot - a.startSlot)
-  const endDiff = Math.abs(b.endSlot - a.endSlot)
-
-  // The events start and end at the same time.
-  if (startDiff === 0 && endDiff === 0) {
-    return true
-  }
-
-  // b starts inside a.
-  if (b.startSlot < a.endSlot) {
-    return true
-  }
-
-  // TODO: understand and comment
-  if (startDiff >= 60 && endDiff <= 60) {
-    return false
-  }
-
-  // TODO: understand and comment
-  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
-    return true
-  }
-
-  return false
-}
+import Row from './row'
 
 const sortByRender = events => {
   // Sort events according to:
@@ -76,23 +49,27 @@ function getStyledEvents (props) {
   const events = props.events.map(event => new Event(event, props))
   const eventsInRenderOrder = sortByRender(events)
 
-  // Group overlapping events, but keep the order.
-  const groups = []
+  // TODO: Use for loop without clone...
+
+  // Group overlapping events, while keeping order.
+  // Every event is either a container event itself, or part of another
+  // container event.
   const tmp = [ ...eventsInRenderOrder ] // clone to maintain order.
+  const containerEvents = []
 
   while (tmp.length > 0) {
     const [ event ] = tmp.splice(0, 1)
 
-    // Check if this event can go into another group.
-    let group = groups.find(group => isInGroup(group, event))
+    // Check if this event can go into a container event.
+    const container = containerEvents.find(c => c.contains(event))
 
-    if (group) {
-      group.addEvent(event)
+    // Couldn't find a container — that means this event is a container.
+    if (!container) {
+      containerEvents.push(event)
       continue
     }
 
-    // Couldn't find a group, so we create a new.
-    groups.push(new Group(event))
+    container.addEvent(event)
   }
 
   // Return the original events, along with their styles.
