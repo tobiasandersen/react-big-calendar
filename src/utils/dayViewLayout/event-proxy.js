@@ -14,7 +14,8 @@ export function positionFromDate(date, min, total) {
   return Math.min(diff, total)
 }
 
-export default class EventProxy {
+
+export class Event {
   constructor(data, props) {
     this.data = data
     this.props = props
@@ -121,5 +122,63 @@ export default class EventProxy {
     const { leaves, xOffset, _width } = this.row
     const index = leaves.indexOf(this) + 1
     return xOffset + (index * _width)
+  }
+}
+
+export class MultiDayEvent extends Event {
+  get startDate () {
+    return this.multiDayDates[0]
+  }
+
+  get endDate () {
+    return this.multiDayDates[1]
+  }
+
+  get start () {
+    return +this.startDate
+  }
+
+  get end () {
+    return +this.endDate
+  }
+
+  get _startDate () {
+    return get(this.data, this.props.startAccessor)
+  }
+
+  get _endDate () {
+    return get(this.data, this.props.endAccessor)
+  }
+
+  get multiDayDates () {
+    const current = new Date(this.props.min) // current date at midnight.
+    let c = new Date(current)
+    let s = new Date(this._startDate)
+    let e = new Date(this._endDate)
+
+    // Use noon to compare dates to avoid DST issues.
+    s.setHours(12, 0, 0, 0)
+    e.setHours(12, 0, 0, 0)
+    c.setHours(12, 0, 0, 0)
+
+    // Current day is at the start, but it spans multiple days,
+    // so we correct the end.
+    if (+c === +s && c < e) {
+      return [this._startDate, dates.endOf(this._startDate, 'day')]
+    }
+
+    // Current day is in between start and end dates,
+    // so we make it span all day.
+    if (c > s && c < e) {
+      return [current, dates.endOf(current, 'day')]
+    }
+
+    // Current day is at the end of a multi day event,
+    // so we make it start at midnight, and end normally.
+    if (c > s && +c === +e) {
+      return [current, this._endDate]
+    }
+
+    return [this._startDate, this._endDate]
   }
 }

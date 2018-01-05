@@ -1,4 +1,4 @@
-import EventProxy from './event-proxy'
+import { Event, MultiDayEvent } from './event-proxy'
 
 /**
  * Returns true if event b is considered to be "inside" event a.
@@ -66,10 +66,13 @@ function sortByRender(events) {
   return sorted
 }
 
-function getStyledEvents({ events, ...props }) {
+function getStyledEvents({ events, showMultiDayTimes, ...props }) {
   // Create proxy events and order them so that we don't have
   // to fiddle with z-indexes.
-  const proxies = events.map(event => new EventProxy(event, props))
+  const proxies = events.map(event => showMultiDayTimes 
+    ? new MultiDayEvent(event, props)
+    : new Event(event, props)
+  )
   const eventsInRenderOrder = sortByRender(proxies)
 
   // Group overlapping events, while keeping order.
