@@ -79,7 +79,7 @@ export default class EventProxy {
     }
 
     // The leaf event's width is determined by its row's width
-    return this._row._width
+    return this.row._width
   }
 
   /**
@@ -101,7 +101,7 @@ export default class EventProxy {
     }
 
     // Leaves can grow unless they're the last item in a row.
-    const { leaves } = this._row
+    const { leaves } = this.row
     const index = leaves.indexOf(this)
     return index === leaves.length - 1 ? noOverlap : overlap
   }
@@ -118,7 +118,7 @@ export default class EventProxy {
     }
 
     // Leaves are spread out evenly on the space left by its row.
-    const { leaves, xOffset, _width } = this._row
+    const { leaves, xOffset, _width } = this.row
     const index = leaves.indexOf(this) + 1
     return xOffset + (index * _width)
   }

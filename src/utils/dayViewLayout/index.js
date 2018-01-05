@@ -75,11 +75,10 @@ function getStyledEvents({ events, ...props }) {
   // Group overlapping events, while keeping order.
   // Every event is always one of: container, row or leaf.
   // Containers can contain rows, and rows can contain leaves.
-  const tmp = [ ...eventsInRenderOrder ] // clone to maintain order.
   const containerEvents = []
 
-  while (tmp.length > 0) {
-    const [ event ] = tmp.splice(0, 1)
+  for (let i = 0; i < eventsInRenderOrder.length; i++) {
+    const event = eventsInRenderOrder[i]
 
     // Check if this event can go into a container event.
     const container = containerEvents.find(c => contains(c, event))
@@ -97,22 +96,16 @@ function getStyledEvents({ events, ...props }) {
     // Check if the event can be placed in an existing row.
     // Start looking from behind.
     let row = null
-    for (let i = container.rows.length - 1; i >= 0; i--) {
-      const curr = container.rows[i]
-      row = curr && onSameRow(curr, event) ? curr : null
-
-      if (!row) {
-        continue
+    for (let j = container.rows.length - 1; !row && j >= 0; j--) {
+      if (onSameRow(container.rows[j], event)) {
+        row = container.rows[j]
       }
-
-      // Found a row for the event.
-      row.leaves.push(event)
-      event._row = row
-      break
     }
 
-    // Couldn't find a row for the event – that means this event is a row.
-    if (!row) {
+    if (row) { // Found a row, so add it.
+      row.leaves.push(event)
+      event.row = row
+    } else { // Couldn't find a row – that means this event is a row.
       event.leaves = []
       container.rows.push(event)
     }
