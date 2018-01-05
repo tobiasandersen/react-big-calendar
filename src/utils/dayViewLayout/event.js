@@ -1,6 +1,5 @@
 import { accessor as get } from '../accessors'
 import dates from '../dates'
-import Row from './row'
 
 const isOverlapping = (row, event) => {
   const startDiff = Math.abs(event.startSlot - row.startSlot)
@@ -41,6 +40,9 @@ export default class Event {
     this._container = null
     this._rows = []
     this._row = null
+    this._leaves = []
+
+    // TODO: Remove Row class and add leaves?
   }
 
   contains = (event) => {
@@ -87,13 +89,15 @@ export default class Event {
       const lastRow = this._rows[i]
 
       if (isOverlapping(lastRow, event)) {
-        lastRow.addEvent(event)
+        // lastRow.addEvent(event)
+        lastRow._leaves.push(event)
+        event.setRow(lastRow)
         return
       }
     }
 
     // Couldn't find a row for the event – that means this event is a row.
-    this._rows.push(new Row(event))
+    this._rows.push(event)
   }
 
   get startDate () {
@@ -133,6 +137,10 @@ export default class Event {
     return Math.max(2, this.bottom - this.top)
   }
 
+  get columns () {
+    return (this._row ? this._row._leaves.length : this._leaves.length) + 1
+  }
+
   /**
    * The event's width without any overlap.
    */
@@ -146,11 +154,11 @@ export default class Event {
     }
 
     const availableWidth = 100 - this._container._width
-    return availableWidth / this._row.columns
+    return availableWidth / this.columns
   }
 
   get _rowIndex () {
-    return this._row && this._row.events.indexOf(this)
+    return this._row ? this._row._leaves.indexOf(this) + 1 : 0
   }
 
   /**
@@ -177,6 +185,14 @@ export default class Event {
       return 0
     }
 
-    return this._container._width + (this._rowIndex * this._width)
+    const x = this._container._width + (this._rowIndex * this._width)
+
+    console.log({
+      index: this._rowIndex,
+      cWidth: this._container._width,
+      width: this._width
+    })
+
+    return x
   }
 }

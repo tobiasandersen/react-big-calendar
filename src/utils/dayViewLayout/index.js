@@ -1,5 +1,4 @@
 import Event from './event'
-import Row from './row'
 
 const sortByRender = events => {
   // Sort events according to:
@@ -49,7 +48,7 @@ function getStyledEvents (props) {
   const events = props.events.map(event => new Event(event, props))
   const eventsInRenderOrder = sortByRender(events)
 
-  // TODO: Use for loop without clone...
+  // TODO: Use for loop without clone?
 
   // Group overlapping events, while keeping order.
   // Every event is either a container event itself, or part of another
