@@ -19,6 +19,9 @@ const isOverlapping = (a, b) => {
   return false
 }
 
+/**
+ * Returns true if event b is considered contained by event a.
+ */
 const contains = (a, b) => {
   const startDiff = Math.abs(b.startSlot - a.startSlot)
   const endDiff = Math.abs(b.endSlot - a.endSlot)
@@ -110,20 +113,19 @@ function getStyledEvents (props) {
 
     // Couldn't find a container — that means this event is a container.
     if (!container) {
-      event._rows = []
+      event.rows = []
       containerEvents.push(event)
       continue
     }
 
     // Found a container for the event.
-    // event.setContainer(container)
-    event._container = container
+    event.container = container
 
     // Check if the event can be placed in an existing row.
     // Start looking from behind.
     let row = null
-    for (let i = container._rows.length - 1; i >= 0; i--) {
-      const curr = container._rows[i]
+    for (let i = container.rows.length - 1; i >= 0; i--) {
+      const curr = container.rows[i]
       row = curr && isOverlapping(curr, event) ? curr : null
 
       if (!row) {
@@ -131,31 +133,30 @@ function getStyledEvents (props) {
       }
 
       // Found a row for the event.
-      row._leaves.push(event)
-      // event.setRow(row)
+      row.leaves.push(event)
       event._row = row
       break
     }
 
     // Couldn't find a row for the event – that means this event is a row.
     if (!row) {
-      event._leaves = []
-      container._rows.push(event)
+      event.leaves = []
+      container.rows.push(event)
     }
-
-    // container.addEvent(event)
   }
 
   // Return the original events, along with their styles.
-  return eventsInRenderOrder.map(event => ({
-    event: event.data,
-    style: {
-      top: event.top,
-      height: event.height,
-      width: event.width,
-      xOffset: event.xOffset
+  return eventsInRenderOrder.map(event => {
+    return {
+      event: event.data,
+      style: {
+        top: event.top,
+        height: event.height,
+        width: event.width,
+        xOffset: event.xOffset
+      }
     }
-  }))
+  })
 }
 
 export default getStyledEvents
