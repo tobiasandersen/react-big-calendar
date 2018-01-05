@@ -66,13 +66,11 @@ function sortByRender(events) {
   return sorted
 }
 
-function getStyledEvents(props) {
-  // Create events and order them according to render index.
-  // By doing this, we don't have to fiddle with z-indexes.
-  const events = props.events.map(event => new EventProxy(event, props))
-  const eventsInRenderOrder = sortByRender(events)
-
-  // TODO: Use for loop without clone?
+function getStyledEvents({ events, ...props }) {
+  // Create proxy events and order them so that we don't have
+  // to fiddle with z-indexes.
+  const proxies = events.map(event => new EventProxy(event, props))
+  const eventsInRenderOrder = sortByRender(proxies)
 
   // Group overlapping events, while keeping order.
   // Every event is always one of: container, row or leaf.

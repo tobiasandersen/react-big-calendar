@@ -112,7 +112,6 @@ export default class EventProxy {
       return 0
     }
 
-    // TODO: Maybe not always container width? check google
     // Rows always start where their container ends.
     if (this.leaves) {
       return this.container._width
