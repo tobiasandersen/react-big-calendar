@@ -1,6 +1,19 @@
-import Event from './event'
+import EventProxy from './event-proxy'
 
-const isOverlapping = (a, b) => {
+/**
+ * Returns true if event b is considered to be "inside" event a.
+ */
+function contains(a, b) {
+  return (
+    a.startSlot <= b.startSlot && // a starts before, or at the same time as, b.
+    a.endSlot >= b.endSlot // a ends after, or ar at the same time as, b.
+  )
+}
+
+/**
+ * Return true if event a and b overlaps.
+ */
+function isOverlapping(a, b) {
   const startDiff = Math.abs(b.startSlot - a.startSlot)
   const endDiff = Math.abs(b.endSlot - a.endSlot)
 
@@ -19,37 +32,7 @@ const isOverlapping = (a, b) => {
   return false
 }
 
-/**
- * Returns true if event b is considered contained by event a.
- */
-const contains = (a, b) => {
-  const startDiff = Math.abs(b.startSlot - a.startSlot)
-  const endDiff = Math.abs(b.endSlot - a.endSlot)
-
-  // The events start and end at the same time.
-  if (startDiff === 0 && endDiff === 0) {
-    return true
-  }
-
-  // b starts inside a.
-  if (b.startSlot < a.endSlot) {
-    return true
-  }
-
-  // TODO: understand and comment
-  if (startDiff >= 60 && endDiff <= 60) {
-    return false
-  }
-
-  // TODO: understand and comment
-  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
-    return true
-  }
-
-  return false
-}
-
-const sortByRender = events => {
+function sortByRender(events) {
   // Sort events according to:
   // 1. start time
   // 2. duration
@@ -91,10 +74,10 @@ const sortByRender = events => {
   return sorted
 }
 
-function getStyledEvents (props) {
+function getStyledEvents(props) {
   // Create events and order them according to render index.
   // By doing this, we don't have to fiddle with z-indexes.
-  const events = props.events.map(event => new Event(event, props))
+  const events = props.events.map(event => new EventProxy(event, props))
   const eventsInRenderOrder = sortByRender(events)
 
   // TODO: Use for loop without clone?
@@ -160,4 +143,4 @@ function getStyledEvents (props) {
 }
 
 export default getStyledEvents
-export { startsBefore, positionFromDate } from './event'
+export { startsBefore, positionFromDate } from './event-proxy'

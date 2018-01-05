@@ -14,7 +14,7 @@ export function positionFromDate(date, min, total) {
   return Math.min(diff, total)
 }
 
-export default class Event {
+export default class EventProxy {
   constructor(data, props) {
     this.data = data
     this.props = props
