@@ -1,5 +1,32 @@
 import Event from './event'
 
+const contains = (a, b) => {
+  const startDiff = Math.abs(b.startSlot - a.startSlot)
+  const endDiff = Math.abs(b.endSlot - a.endSlot)
+
+  // The events start and end at the same time.
+  if (startDiff === 0 && endDiff === 0) {
+    return true
+  }
+
+  // b starts inside a.
+  if (b.startSlot < a.endSlot) {
+    return true
+  }
+
+  // TODO: understand and comment
+  if (startDiff >= 60 && endDiff <= 60) {
+    return false
+  }
+
+  // TODO: understand and comment
+  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
+    return true
+  }
+
+  return false
+}
+
 const sortByRender = events => {
   // Sort events according to:
   // 1. start time
@@ -60,7 +87,7 @@ function getStyledEvents (props) {
     const [ event ] = tmp.splice(0, 1)
 
     // Check if this event can go into a container event.
-    const container = containerEvents.find(c => c.contains(event))
+    const container = containerEvents.find(c => contains(c, event))
 
     // Couldn't find a container — that means this event is a container.
     if (!container) {

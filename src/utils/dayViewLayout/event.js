@@ -1,19 +1,19 @@
 import { accessor as get } from '../accessors'
 import dates from '../dates'
 
-const isOverlapping = (row, event) => {
-  const startDiff = Math.abs(event.startSlot - row.startSlot)
-  const endDiff = Math.abs(event.endSlot - row.endSlot)
+const isOverlapping = (a, b) => {
+  const startDiff = Math.abs(b.startSlot - a.startSlot)
+  const endDiff = Math.abs(b.endSlot - a.endSlot)
 
   if (startDiff >= 60 && endDiff >= 60) {
     return false
   }
 
-  if (event.startSlot < row.endSlot) {
+  if (b.startSlot < a.endSlot) {
     return true
   }
 
-  if (event.startSlot < row.startSlot && event.endSlot > row.startSlot) {
+  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
     return true
   }
 
@@ -41,35 +41,6 @@ export default class Event {
     this._rows = []
     this._row = null
     this._leaves = []
-
-    // TODO: Remove Row class and add leaves?
-  }
-
-  contains = (event) => {
-    const startDiff = Math.abs(event.startSlot - this.startSlot)
-    const endDiff = Math.abs(event.endSlot - this.endSlot)
-
-    // The events start and end at the same time.
-    if (startDiff === 0 && endDiff === 0) {
-      return true
-    }
-
-    // b starts inside a.
-    if (event.startSlot < this.endSlot) {
-      return true
-    }
-
-    // TODO: understand and comment
-    if (startDiff >= 60 && endDiff <= 60) {
-      return false
-    }
-
-    // TODO: understand and comment
-    if (event.startSlot < this.startSlot && event.endSlot > this.startSlot) {
-      return true
-    }
-
-    return false
   }
 
   setContainer = (event) => {
