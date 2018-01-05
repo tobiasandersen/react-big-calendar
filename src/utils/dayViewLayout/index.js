@@ -5,31 +5,23 @@ import EventProxy from './event-proxy'
  */
 function contains(a, b) {
   return (
-    a.startSlot <= b.startSlot && // a starts before, or at the same time as, b.
-    a.endSlot >= b.endSlot // a ends after, or ar at the same time as, b.
+    // A starts before, or at the same time as, b.
+    a.startSlot <= b.startSlot &&
+     // A ends after, or ar at the same time as, b.
+    a.endSlot >= b.endSlot
   )
 }
 
 /**
- * Return true if event a and b overlaps.
+ * Return true if event a and b is considered to be on the same row.
  */
-function isOverlapping(a, b) {
-  const startDiff = Math.abs(b.startSlot - a.startSlot)
-  const endDiff = Math.abs(b.endSlot - a.endSlot)
-
-  if (startDiff >= 60 && endDiff >= 60) {
-    return false
-  }
-
-  if (b.startSlot < a.endSlot) {
-    return true
-  }
-
-  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
-    return true
-  }
-
-  return false
+function onSameRow(a, b) {
+  return (
+    // Occupies the same start slot.
+    Math.abs(b.startSlot - a.startSlot) <= 30 ||
+     // A's start slot overlaps with b's end slot.
+    a.startSlot > b.startSlot && a.startSlot < b.endSlot
+  )
 }
 
 function sortByRender(events) {
@@ -109,7 +101,7 @@ function getStyledEvents(props) {
     let row = null
     for (let i = container.rows.length - 1; i >= 0; i--) {
       const curr = container.rows[i]
-      row = curr && isOverlapping(curr, event) ? curr : null
+      row = curr && onSameRow(curr, event) ? curr : null
 
       if (!row) {
         continue
