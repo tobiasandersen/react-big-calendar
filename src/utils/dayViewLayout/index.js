@@ -1,5 +1,24 @@
 import Event from './event'
 
+const isOverlapping = (a, b) => {
+  const startDiff = Math.abs(b.startSlot - a.startSlot)
+  const endDiff = Math.abs(b.endSlot - a.endSlot)
+
+  if (startDiff >= 60 && endDiff >= 60) {
+    return false
+  }
+
+  if (b.startSlot < a.endSlot) {
+    return true
+  }
+
+  if (b.startSlot < a.startSlot && b.endSlot > a.startSlot) {
+    return true
+  }
+
+  return false
+}
+
 const contains = (a, b) => {
   const startDiff = Math.abs(b.startSlot - a.startSlot)
   const endDiff = Math.abs(b.endSlot - a.endSlot)
@@ -78,8 +97,8 @@ function getStyledEvents (props) {
   // TODO: Use for loop without clone?
 
   // Group overlapping events, while keeping order.
-  // Every event is either a container event itself, or part of another
-  // container event.
+  // Every event is always one of: container, row or leaf.
+  // Containers can contain rows, and rows can contain leaves.
   const tmp = [ ...eventsInRenderOrder ] // clone to maintain order.
   const containerEvents = []
 
@@ -91,11 +110,40 @@ function getStyledEvents (props) {
 
     // Couldn't find a container — that means this event is a container.
     if (!container) {
+      event._rows = []
       containerEvents.push(event)
       continue
     }
 
-    container.addEvent(event)
+    // Found a container for the event.
+    // event.setContainer(container)
+    event._container = container
+
+    // Check if the event can be placed in an existing row.
+    // Start looking from behind.
+    let row = null
+    for (let i = container._rows.length - 1; i >= 0; i--) {
+      const curr = container._rows[i]
+      row = curr && isOverlapping(curr, event) ? curr : null
+
+      if (!row) {
+        continue
+      }
+
+      // Found a row for the event.
+      row._leaves.push(event)
+      // event.setRow(row)
+      event._row = row
+      break
+    }
+
+    // Couldn't find a row for the event – that means this event is a row.
+    if (!row) {
+      event._leaves = []
+      container._rows.push(event)
+    }
+
+    // container.addEvent(event)
   }
 
   // Return the original events, along with their styles.

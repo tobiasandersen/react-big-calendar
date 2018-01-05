@@ -79,6 +79,7 @@ storiesOf('module.Calendar.week', module)
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           events={createEvents(0)}
+          step={30}
         />
       </div>
     )
@@ -89,8 +90,8 @@ storiesOf('module.Calendar.week', module)
         <Calendar
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
-          timeslots={4}
           events={createEvents(1)}
+          step={30}
         />
       </div>
     )
@@ -102,6 +103,7 @@ storiesOf('module.Calendar.week', module)
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           events={createEvents(2)}
+          step={30}
         />
       </div>
     )
@@ -113,6 +115,7 @@ storiesOf('module.Calendar.week', module)
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           events={createEvents(3)}
+          step={30}
         />
       </div>
     )
@@ -124,6 +127,7 @@ storiesOf('module.Calendar.week', module)
           defaultView={Calendar.Views.DAY}
           defaultDate={new Date()}
           events={createEvents(4)}
+          step={30}
         />
       </div>
     )

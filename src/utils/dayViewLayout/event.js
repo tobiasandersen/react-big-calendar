@@ -43,33 +43,33 @@ export default class Event {
     this._leaves = []
   }
 
-  setContainer = (event) => {
-    this._container = event
-  }
-
-  setRow = (row, index) => {
-    this._row = row
-  }
-
-  addEvent = (event) => {
-    event.setContainer(this)
-
-    // Check if the added event can be placed in an existing row.
-    // Start looking from behind.
-    for (let i = this._rows.length - 1; i >= 0; i--) {
-      const lastRow = this._rows[i]
-
-      if (isOverlapping(lastRow, event)) {
-        // lastRow.addEvent(event)
-        lastRow._leaves.push(event)
-        event.setRow(lastRow)
-        return
-      }
-    }
-
-    // Couldn't find a row for the event – that means this event is a row.
-    this._rows.push(event)
-  }
+  // setContainer = (event) => {
+  //   this._container = event
+  // }
+  //
+  // setRow = (row, index) => {
+  //   this._row = row
+  // }
+  //
+  // addEvent = (event) => {
+  //   event.setContainer(this)
+  //
+  //   // Check if the added event can be placed in an existing row.
+  //   // Start looking from behind.
+  //   for (let i = this._rows.length - 1; i >= 0; i--) {
+  //     const lastRow = this._rows[i]
+  //
+  //     if (isOverlapping(lastRow, event)) {
+  //       // lastRow.addEvent(event)
+  //       lastRow._leaves.push(event)
+  //       event.setRow(lastRow)
+  //       return
+  //     }
+  //   }
+  //
+  //   // Couldn't find a row for the event – that means this event is a row.
+  //   this._rows.push(event)
+  // }
 
   get startDate () {
     return get(this.data, this.props.startAccessor)
@@ -156,14 +156,6 @@ export default class Event {
       return 0
     }
 
-    const x = this._container._width + (this._rowIndex * this._width)
-
-    console.log({
-      index: this._rowIndex,
-      cWidth: this._container._width,
-      width: this._width
-    })
-
-    return x
+    return this._container._width + (this._rowIndex * this._width)
   }
 }
