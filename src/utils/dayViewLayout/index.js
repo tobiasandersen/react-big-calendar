@@ -1,18 +1,6 @@
 import { Event, MultiDayEvent } from './event-proxy'
 
 /**
- * Returns true if event b is considered to be "inside" event a.
- */
-function contains(a, b) {
-  return (
-    // A starts before, or at the same time as, b.
-    a.startSlot <= b.startSlot &&
-     // A ends after, or ar at the same time as, b.
-    a.endSlot >= b.endSlot
-  )
-}
-
-/**
  * Return true if event a and b is considered to be on the same row.
  */
 function onSameRow(a, b) {
@@ -28,16 +16,20 @@ function sortByRender(events) {
   // Sort events according to:
   // 1. start time
   // 2. duration
-  const sortedByTime = events.sort((a, b) => {
-    if (a.start === b.start) {
-      return b.end - a.end
-    }
+  const sortedByTime = [...events] // clone to keep original order
+    .sort((a, b) => {
+      if (a.start === b.start) {
+        if (a.end === b.end) {
+          return events.indexOf(a) - events.indexOf(b)
+        }
 
-    return a.start - b.start
-  })
+        return b.end - a.end
+      }
+
+      return a.start - b.start
+    })
 
   const sorted = []
-
   while (sortedByTime.length > 0) {
     const [ event ] = sortedByTime.splice(0, 1)
     event && sorted.push(event)
@@ -69,7 +61,7 @@ function sortByRender(events) {
 function getStyledEvents({ events, showMultiDayTimes, ...props }) {
   // Create proxy events and order them so that we don't have
   // to fiddle with z-indexes.
-  const proxies = events.map(event => showMultiDayTimes 
+  const proxies = events.map(event => showMultiDayTimes
     ? new MultiDayEvent(event, props)
     : new Event(event, props)
   )
@@ -84,7 +76,7 @@ function getStyledEvents({ events, showMultiDayTimes, ...props }) {
     const event = eventsInRenderOrder[i]
 
     // Check if this event can go into a container event.
-    const container = containerEvents.find(c => contains(c, event))
+    const container = containerEvents.find(c => c.endSlot >= event.endSlot)
 
     // Couldn't find a container — that means this event is a container.
     if (!container) {
